@@ -1,57 +1,41 @@
-provider "aws" {
-  region = "us-east-1"
+resource "aws_iam_role" "ec2_creator_role" {
+  name = var.role_name
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        AWS = var.trusted_entities
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
 }
 
-resource "aws_security_group" "ec2_sg" {
-  name        = "ec2-ssh-sg"
-  description = "Allow SSH access"
-  vpc_id      = var.vpc_id
+resource "aws_iam_policy" "ec2_role_creator_policy" {
+  name        = "${var.role_name}_policy"
+  description = "Allows creating IAM roles and EC2 roles"
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # restrict in production
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "ec2-ssh-sg"
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:CreateRole",
+          "iam:AttachRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:PassRole",
+          "ec2:*"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
 
-resource "aws_instance" "example" {
-  ami                         = data.aws_ami.amazon_linux.id
-  instance_type               = "t3.micro"
-  subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
-  associate_public_ip_address = true # false if using private subnet
-
-  key_name = var.key_name
-
-  tags = {
-    Name = "example-ec2-instance"
-  }
-}
-
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["amazon"]
+resource "aws_iam_role_policy_attachment" "attach_policy" {
+  role       = aws_iam_role.ec2_creator_role.name
+  policy_arn = aws_iam_policy.ec2_role_creator_policy.arn
 }

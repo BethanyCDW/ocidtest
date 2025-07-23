@@ -1,14 +1,11 @@
-variable "vpc_id" {
+variable "role_name" {
+  description = "Name of the IAM Role"
   type        = string
-  description = "The VPC ID to deploy the EC2 instance into"
+  default     = "ec2-creator-role"
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "The subnet ID to deploy the EC2 instance into"
-}
-
-variable "key_name" {
-  type        = string
-  description = "SSH key pair name for EC2 login"
+variable "trusted_entities" {
+  description = "The principals (AWS account, user, or service) allowed to assume this role"
+  type        = list(string)
+  default     = ["arn:aws:iam::755213274221:saivana-gh-role"] # Replace with your trusted entity
 }
