@@ -15,7 +15,7 @@ resource "aws_iam_role" "ec2_creator_role" {
 
 resource "aws_iam_policy" "ec2_role_creator_policy" {
   name        = "${var.role_name}_policy"
-  description = "Allows creating IAM roles and EC2 roles"
+  description = "Allows creating IAM roles and managing EC2 instances"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -26,8 +26,25 @@ resource "aws_iam_policy" "ec2_role_creator_policy" {
           "iam:CreateRole",
           "iam:AttachRolePolicy",
           "iam:PutRolePolicy",
-          "iam:PassRole",
-          "ec2:*"
+          "iam:PassRole"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:RunInstances",
+          "ec2:TerminateInstances",
+          "ec2:StartInstances",
+          "ec2:StopInstances",
+          "ec2:DescribeInstances",
+          "ec2:DescribeImages",
+          "ec2:DescribeKeyPairs",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs",
+          "ec2:CreateTags",
+          "ec2:DeleteTags"
         ]
         Resource = "*"
       }
@@ -55,8 +72,8 @@ resource "aws_iam_policy" "tf_state_access" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::bb-oicd-test",
-          "arn:aws:s3:::bb-oicd-test/*"
+          "arn:aws:s3:::bb-oicd-test/test/",
+          "arn:aws:s3:::bb-oicd-test/test//*"
         ]
       },
       {
