@@ -47,6 +47,11 @@ resource "aws_iam_policy" "ec2_role_creator_policy" {
           "ec2:DeleteTags"
         ]
         Resource = "*"
+        Condition = {
+          StringEquals = {
+            "ec2:ResourceTag/tag-key" = "tag-value"
+          }
+        }
       }
     ]
   })
@@ -94,3 +99,5 @@ resource "aws_iam_role_policy_attachment" "attach_tf_state_access" {
   role       = aws_iam_role.ec2_creator_role.name
   policy_arn = aws_iam_policy.tf_state_access.arn
 }
+
+ 
