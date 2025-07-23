@@ -12,3 +12,7 @@ output "oidc_subject" {
   description = "OIDC subject (sub condition in trust policy)"
   value       = "repo:your-org/your-repo:ref:refs/heads/main"
 }
+
+output "oidc_provider_url" {
+  value = aws_iam_openid_connect_provider.github.url
+}

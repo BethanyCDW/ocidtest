@@ -38,8 +38,49 @@ resource "aws_iam_role" "github_oidc_role" {
   }
 }
 
+#IAM policy least privilege
+resource "aws_iam_policy" "github_oidc_least_privilege" {
+  name        = "github-oidc-least-privilege"
+  description = "Least privilege policy for GitHub OIDC role"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "EKSAccess",
+        Effect = "Allow",
+        Action = [
+          "eks:DescribeCluster",
+          "eks:CreateNamespace",
+          "eks:ListNodegroups",
+          "eks:DescribeNodegroup"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "S3StateAccess",
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        Resource = "*"
+      },
+      {
+        Sid    = "IAMPassRole",
+        Effect = "Allow",
+        Action = [
+          "iam:PassRole"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 #Attach the IAM Policy to the role
-resource "aws_iam_role_policy_attachment" "github_oidc_role_attach" {
+resource "aws_iam_role_policy_attachment" "github_oidc_attach_least_privilege" {
   role       = aws_iam_role.github_oidc_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess" # replace with least-privilege policy
+  policy_arn = aws_iam_policy.github_oidc_least_privilege.arn
 }
