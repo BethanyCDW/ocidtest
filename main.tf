@@ -8,10 +8,10 @@ module "ec2" {
   key_name  = "my-ssh-key"
 }
 module "eks" {
-  source = "./modules/eks"
-  region             = "us-east-1"
-  cluster_name       = "my-eks-cluster"
-  oidc_provider_arn  = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
-  oidc_subject       = "repo:your-org/your-repo:ref:refs/heads/main"
-  eks_node_role_arn  = "arn:aws:iam::123456789012:role/EKSNodeRole"
+  source            = "./modules/eks"
+  region            = "us-east-1"
+  cluster_name      = "my-eks-cluster"
+  oidc_provider_arn = module.oicd.oidc_provider_arn
+  oidc_subject      = module.oicd.oidc_subject
+  eks_node_role_arn = "arn:aws:iam::059134021762:role/EKSNodeRole"
 }
