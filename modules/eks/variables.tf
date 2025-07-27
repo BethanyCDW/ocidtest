@@ -27,3 +27,12 @@ variable "service_account_subject" {
   description = "OIDC subject format: system:serviceaccount:<namespace>:<serviceaccount-name>"
   type        = string
 }
+variable "region" {
+  description = "AWS region"
+  type        = string
+}
+
+variable "account_id" {
+  description = "AWS account ID"
+  type        = string
+}

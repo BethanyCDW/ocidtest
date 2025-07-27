@@ -9,3 +9,12 @@ variable "trusted_entities" {
   type        = list(string)
   default     = ["arn:aws:iam::755213274221:saivana-gh-role"] # Replace with your trusted entity
 }
+variable "region" {
+  description = "AWS region"
+  type        = string
+}
+
+variable "account_id" {
+  description = "AWS account ID"
+  type        = string
+}
